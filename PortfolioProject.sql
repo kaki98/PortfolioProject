@@ -1,15 +1,9 @@
+/*
 
+SQL Project Part 1
 
-Select * from PortfolioProject..CovidDeaths
-order by 3,4
+*/
 
---Select * from PortfolioProject..CovidVaccinations 
---order by 3,4
-
--- Select the Data we are going to be using
-
-Select location,date,total_cases,new_cases, total_deaths,population from PortfolioProject..CovidDeaths
-order by 1,2
 
 -- Looking at the Total Cases vs Total Deaths
 -- Shows the likelihood of dying if you contract covid in your country
@@ -34,7 +28,7 @@ From PortfolioProject..CovidDeaths
 Group by location, population
 order by 4 desc
 
- -- Showing countries with the Highest Death Count vs Population 
+-- Showing countries with the Highest Death Count vs Population 
 
 Select location, MAX(CAST(total_deaths as float)) as TotalDeathCount
 From PortfolioProject..CovidDeaths
@@ -60,7 +54,7 @@ Group by location
 order by 2 desc
 
 	
---  Death Percentage of Covid Cases globally per day
+-- Death Percentage of Covid Cases globally per day
 
 Select date, sum(new_cases) as total_cases, sum(cast(new_deaths as int)) as total_deaths, sum(cast(new_deaths as int))/sum(new_cases)*100 as DeathPercentage
 From PortfolioProject..CovidDeaths
@@ -130,4 +124,42 @@ From PortfolioProject..CovidDeaths dea
 Join PortfolioProject..CovidVaccinations vac
 	On dea.location = vac.location and dea.date =  vac.date
 where dea.continent is not null and dea.location = 'Albania'
---Order by 2,3
+
+
+/*
+
+Queries used for Tableau Project
+
+*/
+
+
+-- 1. 
+
+Select sum(new_cases) as total_cases, sum(cast(new_deaths as int)) as total_deaths, SUM(cast(new_deaths as float))/sum(new_cases)*100 as DeathPercentage
+From PortfolioProject..CovidDeaths
+where continent is not null
+order by 1,2
+
+--2.
+
+Select location, SUM(CAST(new_deaths as int)) as TotalDeathCount
+From PortfolioProject..CovidDeaths
+WHERE continent is null
+and location in ('AFRICA', 'Asia', 'Europe', 'North America', 'South America','Oceania')
+Group by location
+order by 2 desc
+
+--3.
+
+Select location,population, max(cast(total_cases as int)) as HightestInfectionCount,  Max((total_cases)/(population))*100 as PopulationInfectedPerecent
+From PortfolioProject..CovidDeaths
+Group by location, population
+order by 4 desc
+
+--4.
+
+Select location,population, date, max(cast(total_cases as int)) as HightestInfectionCount,  Max((total_cases)/(population))*100 as PopulationInfectedPerecent
+From PortfolioProject..CovidDeaths
+where continent is not null
+Group by location, population,date
+order by PopulationInfectedPerecent desc	
